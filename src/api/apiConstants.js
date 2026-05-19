@@ -9,6 +9,8 @@ export const API = {
   FORGOT_PASSWORD: `${BASE_URL}auth/forget_password.php`,
   RESET_PASSWORD: `${BASE_URL}auth/reset_password.php`,
 
+  EDIT_PROFILE: `${BASE_URL}auth/edit_profile.php`,
+
   VIEW_BANNER: `${BASE_URL}banner_api/view_banner.php`,
   OFFER_BANNER: `${BASE_URL}offer_banner_api/view_banner.php`,
   DISCOUNT_BANNER: `${BASE_URL}discount_banner_api/get_single_discount_banner.php`,

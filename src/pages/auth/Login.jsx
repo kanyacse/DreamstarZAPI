@@ -51,15 +51,14 @@ console.log("RESPONSE DATA:", res.data);
 
       setLoading(false);
 
-      // 🔥 IMPORTANT FIX (MATCH PHP: status)
+      
       if (res.data.status === "success") {
 
-        // store user in redux
+      
         dispatch(loginSuccess(res.data.user));
 
         setMessage(res.data.message || "Login successful");
 
-        // go to home page
         navigate("/");
 
       } else {

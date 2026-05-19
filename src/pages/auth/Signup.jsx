@@ -33,77 +33,73 @@ function Signup() {
       return;
     }
 
+    if (!form.email.includes("@")) {
+      setMessage("Email must contain @ symbol");
+      return;
+    }
+
+    if (form.password.length < 8) {
+      setMessage("Password must be at least 8 characters");
+      return;
+    }
+
     try {
 
       setLoading(true);
       setMessage("");
 
-      //  CREATE FORM DATA 
       const data = new FormData();
-
       data.append("name", form.name);
       data.append("email", form.email);
       data.append("password", form.password);
 
-     
       const now = new Date();
 
-         const date_time =
-
-           now.getDate().toString().padStart(2, "0") + "-" +
-         (now.getMonth() + 1).toString().padStart(2, "0") + "-" +
-  now.getFullYear() + " " +
+      const date_time =
+  now.getFullYear() + "-" +
+  String(now.getMonth() + 1).padStart(2, "0") + "-" +
+  String(now.getDate()).padStart(2, "0") + " " +
   now.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true
   });
+      data.append("date_time", date_time);
 
-
-data.append("date_time", date_time);
-
-    const res = await axios.post(API.SIGNUP, data);
-
-      console.log("SIGNUP RESPONSE:", res.data);
+      const res = await axios.post(API.SIGNUP, data);
 
       setLoading(false);
 
-      // CHECK BACKEND STATUS 
       if (res.data.status === "success") {
 
         setMessage(res.data.message || "Signup successful");
 
-        // 🔥 AUTO LOGIN AFTER SIGNUP
         dispatch(loginSuccess(res.data.user || form));
 
-        // redirect to home
         navigate("/");
 
       } else {
-
         setMessage(res.data.message || "Signup failed");
-
       }
 
     } catch (error) {
-
       setLoading(false);
       console.log(error);
       setMessage("Server Error");
-
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="flex items-center justify-center h-screen bg-gray-100">
 
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+      <div className="bg-white p-6 rounded-xl shadow-md w-80">
 
-        <h2 className="text-3xl font-bold text-center mb-2">
+        {/* TITLE */}
+        <h2 className="text-2xl font-bold mb-4 text-center">
           Create Account
         </h2>
 
-        <p className="text-gray-500 text-center mb-6">
+        <p className="text-gray-500 text-center mb-4 text-sm">
           Sign up to get started
         </p>
 
@@ -112,7 +108,7 @@ data.append("date_time", date_time);
           type="text"
           name="name"
           placeholder="Full Name"
-          className="w-full border p-3 rounded-xl mb-4"
+          className="w-full border p-2 mb-3 rounded"
           value={form.name}
           onChange={handleChange}
         />
@@ -121,8 +117,8 @@ data.append("date_time", date_time);
         <input
           type="email"
           name="email"
-          placeholder="Email Address"
-          className="w-full border p-3 rounded-xl mb-4"
+          placeholder="Email"
+          className="w-full border p-2 mb-3 rounded"
           value={form.email}
           onChange={handleChange}
         />
@@ -132,7 +128,7 @@ data.append("date_time", date_time);
           type="password"
           name="password"
           placeholder="Password"
-          className="w-full border p-3 rounded-xl mb-6"
+          className="w-full border p-2 mb-3 rounded"
           value={form.password}
           onChange={handleChange}
         />
@@ -141,30 +137,35 @@ data.append("date_time", date_time);
         <button
           onClick={handleSignup}
           disabled={loading}
-          className="w-full bg-[#0F4C81] text-white py-3 rounded-xl"
+          className="w-full bg-[#0F4C81] text-white py-2 rounded hover:bg-[#0F4C81]"
         >
           {loading ? "Creating Account..." : "Signup"}
         </button>
 
         {/* MESSAGE */}
         {message && (
-          <p className="text-center mt-4 text-sm text-red-500">
+          <p className="text-center text-sm mt-3 text-red-500">
             {message}
           </p>
         )}
 
         {/* LOGIN LINK */}
-        <p className="text-center mt-6 text-sm text-gray-600">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-blue-600 font-semibold cursor-pointer"
-          >
-            Login
-          </span>
-        </p>
+        <div className="mt-4 text-center text-sm">
+
+          <p>
+            Already have an account?{" "}
+            <span
+              onClick={() => navigate("/login")}
+              className="text-blue-600 font-semibold cursor-pointer"
+            >
+              Login
+            </span>
+          </p>
+
+        </div>
 
       </div>
+
     </div>
   );
 }

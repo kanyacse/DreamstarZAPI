@@ -1,14 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { API } from "../../api/apiConstants";
-import { useNavigate } from "react-router-dom";
 
-function ResetPassword() {
-  const navigate = useNavigate();
-
+function EditProfile() {
   const [form, setForm] = useState({
     email: "",
-    new_password: "",
+    name: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -19,8 +16,8 @@ function ResetPassword() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleResetPassword = async () => {
-    if (!form.email || !form.new_password) {
+  const handleUpdateProfile = async () => {
+    if (!form.email || !form.name) {
       setIsSuccess(false);
       setMessage("All fields are required");
       return;
@@ -28,13 +25,13 @@ function ResetPassword() {
 
     if (!form.email.includes("@")) {
       setIsSuccess(false);
-      setMessage("Email must contain @ symbol");
+      setMessage("Enter a valid email");
       return;
     }
 
-    if (form.new_password.length < 8) {
+    if (form.name.trim().length < 2) {
       setIsSuccess(false);
-      setMessage("Password must be at least 8 characters");
+      setMessage("Name must be at least 2 characters");
       return;
     }
 
@@ -43,10 +40,10 @@ function ResetPassword() {
       setMessage("");
 
       const res = await axios.post(
-        API.RESET_PASSWORD,
+        API.EDIT_PROFILE, 
         {
           email: form.email,
-          new_password: form.new_password,
+          name: form.name,
         },
         {
           headers: {
@@ -58,19 +55,17 @@ function ResetPassword() {
 
       if (res.data.status === "success") {
         setIsSuccess(true);
-        setMessage(res.data.message || "Password reset successful");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setMessage(res.data.message || "Profile updated successfully");
+
+        // optional: clear form
+        setForm({ email: "", name: "" });
       } else {
         setIsSuccess(false);
-        setMessage(res.data.message || "Reset failed");
+        setMessage(res.data.message || "Update failed");
       }
     } catch (error) {
       setIsSuccess(false);
-      const errMsg = error.response?.data?.message || "Server Error";
-      setMessage(errMsg);
-      console.error("Reset password error:", error);
+      setMessage(error.response?.data?.message || "Server Error");
     } finally {
       setLoading(false);
     }
@@ -78,17 +73,16 @@ function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-6">
-
       {/* CARD */}
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6">
 
         {/* TITLE */}
         <h2 className="text-xl sm:text-2xl font-bold text-center">
-          Reset Password
+          Edit Profile
         </h2>
 
         <p className="text-gray-500 text-center text-sm mt-1 mb-4">
-          Enter your email and new password
+          Update your name details
         </p>
 
         {/* EMAIL */}
@@ -101,46 +95,38 @@ function ResetPassword() {
           onChange={handleChange}
         />
 
-        {/* NEW PASSWORD */}
+        {/* NAME */}
         <input
-          type="password"
-          name="new_password"
-          placeholder="New Password"
+          type="text"
+          name="name"
+          placeholder="New Name"
           className="w-full border p-2 sm:p-3 mb-4 rounded text-sm sm:text-base"
-          value={form.new_password}
+          value={form.name}
           onChange={handleChange}
         />
 
         {/* BUTTON */}
         <button
-          onClick={handleResetPassword}
+          onClick={handleUpdateProfile}
           disabled={loading}
           className="w-full bg-[#0F4C81] text-white py-2 sm:py-3 rounded hover:bg-[#0a3b63] transition text-sm sm:text-base"
         >
-          {loading ? "Resetting Password..." : "Reset Password"}
+          {loading ? "Updating Profile..." : "Update Profile"}
         </button>
 
-        {/* MESSAGE - red for error, green for success */}
+        {/* MESSAGE */}
         {message && (
-          <p className={`text-center mt-3 text-sm ${isSuccess ? "text-green-500" : "text-red-500"}`}>
+          <p
+            className={`text-center mt-3 text-sm ${
+              isSuccess ? "text-green-500" : "text-red-500"
+            }`}
+          >
             {message}
           </p>
         )}
-
-        {/* BACK TO LOGIN */}
-        <p className="text-center mt-4 text-sm text-gray-600">
-          Remember your password?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-blue-600 font-semibold cursor-pointer"
-          >
-            Login
-          </span>
-        </p>
-
       </div>
     </div>
   );
 }
 
-export default ResetPassword;
+export default EditProfile;
